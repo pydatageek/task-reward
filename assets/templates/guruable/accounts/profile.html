@@ -1,0 +1,54 @@
+{% extends 'guruable/accounts/base.html' %}
+{% load static i18n widget_tweaks %}
+
+{% block content %}
+<!-- Authentication card start -->
+<div class="col-md-12 col-xl-8">
+<h1>{% trans 'Profile' %}</h1>
+  <div class="table-responsive">
+    <div id="status"></div>
+    <h3 class="mt-3">My accomplished tasks</h3>
+    <ul id="actions-list"></ul>
+  </div>
+</div>
+<!-- Authentication card end -->
+{% endblock %}
+
+{% block custom_scripts %}
+
+<script>
+  $(document).ready(function() {
+      var url = "{% url 'rewards:user-actions-list' %}"
+
+      $.ajax({
+        dataType: 'json',
+        url: url,
+        success: success
+      });
+
+      function success(data) {
+        var result = "";
+        $.each(data.results, function(index, value)
+        {
+          result += '<li>'+ value.action_obj.name + ' <em>(' + value.action_obj.level + ')</em> ' + value.action_obj.point + ' points</li>';
+        });
+        $('#actions-list').html(result);
+      }
+
+      var url2 = "{% url 'rewards:user-status-list' %}{{ user.id }}"
+
+      $.ajax({
+        dataType: 'json',
+        url: url2,
+        success: success2
+      });
+
+      function success2(data) {
+        var result = "";
+        result += '<h4>'+ data.user_obj.name + ', <em>' + data.level_obj.name + '</em> level with ' + data.total_points + ' points</h4>';
+        $('#status').html(result);
+      }
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'guruable/accounts/base.html' %}
+{% load static i18n widget_tweaks %}
+
+{% block content %}
+<!-- Authentication card start -->
+<div class="login-card card-block auth-body mr-auto ml-auto">
+  <form method="POST" class="md-float-material">
+    {% csrf_token %}
+    <div class="auth-box">
+      <div class="row">
+        <div class="col-md-12">
+          <h3 class="text-left txt-primary">{% trans 'Sign In' %}</h3>
+
+          {% if form.errors %}
+            <!-- TODO: humanize -->
+            <p>{{ form.errors }}</p>
+          {% endif %}
+
+        </div>
+      </div>
+      <hr/>
+      <div class="input-group">
+        {% render_field form.username class+="form-control" placeholder=form.username.label %}
+        <span class="md-line"></span>
+      </div>
+      <div class="input-group">
+        {% render_field form.password class+="form-control" placeholder=form.password.label %}
+        <span class="md-line"></span>
+      </div>
+
+      <div class="row m-t-30">
+        <div class="col-md-12">
+          <button type="submit"
+            class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">
+            {% trans 'Sign in' %}</button>
+        </div>
+      </div>
+      <hr/>
+      <div class="row">
+        <div class="col-md-10">
+          <p class="text-inverse text-left m-b-0">
+            {% trans 'Thank you and enjoy our website.' %}</p>
+          <p class="text-inverse text-left mb-0">
+            <a href="{% url 'register' %}" class="text-center">
+              {% trans 'Register a new membership' %}</a>
+          </p>
+        </div>
+        <div class="col-md-2">
+        </div>
+      </div>
+
+    </div>
+  </form>
+  <!-- end of form -->
+</div>
+<!-- Authentication card end -->
+{% endblock %}

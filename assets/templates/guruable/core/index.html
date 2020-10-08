@@ -1,0 +1,123 @@
+{% extends 'guruable/base.html' %}
+{% load static i18n %}
+
+{% block content %}
+<div class="col-md-12 col-xl-8">
+  <div class="card add-task-card" id="main">
+    <div class="card-header">
+      <div class="card-header-left">
+        <h5>Actions to be accomplished</h5>
+        {% if user.is_anonymous %}
+        <p class="text-danger my-3">Be a member in order to accomplish tasks!</p>
+      {% endif %}
+      </div>
+    </div>
+    <div class="card-block" id="result1">
+    </div>
+  </div>
+</div>
+<div class="col-md-12 col-xl-4">
+  <div class="card project-task">
+    <div class="card-header">
+      <div class="card-header-left ">
+        <h5>{% trans 'Leaderboard' %}</h5>
+      </div>
+    </div>
+    <div class="card-block p-b-10">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="leaders">
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block custom_scripts %}
+
+<script>
+  // this part does not work properly
+  $.ajax({
+    url: "{% url 'rewards:user-status-list' %}{{ user.id }}/",
+    dataType: 'json',
+    success: success3
+  });
+  function success3(data) {
+    if (data.is_user_eligible_today == false) {
+      console.log('with data '+data.is_user_eligible_today)
+      document.getElementById("main").disabled = true;
+    }
+  }  
+  // $("#main").prop("disabled", true);
+
+  $(document).ready(function() {
+    // $("#main").prop("disabled", true);
+    // document.getElementById("main").disabled = true;  
+
+    var url = "{% url 'actions:action-list' %}"
+
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      success: success
+    });
+
+    function success(data) {
+      var result = "";
+      $.each(data.results, function(index, value)
+      {
+        result += '<div class="to-do-list {% if user.is_anonymous %}pointer-disabled{% endif %}"><form>{% csrf_token %}<div class="checkbox-fade fade-in-primary d-block"><label class="check-task d-block"><input type="checkbox" value="" name="' + value.id + '" class="result1-item"><span class="cr"><i class="cr-icon icofont icofont-ui-check txt-default"></i></span><span><h6>';
+        result += value.name + '<span class="text-muted m-l-40">' + value.level_obj.name + ' ' + value.point + ' points';  
+        result += '</span></h6></span></label></form></div>';
+      });
+      $('#result1').html(result);
+    }
+
+    $('#result1').on('click', '.result1-item', function(){
+      $(this).parent().parent().remove();
+
+      $.ajax({
+        type: "POST",
+        beforeSend: function( xhr, settings){
+          xhr.setRequestHeader("X-CSRFToken", csrftoken ); 
+        }, 
+        traditional: true,
+        url: "{% url 'rewards:user-actions-list' %}",
+        data: {
+          'action': $(this).attr("name"),
+          'user': parseInt("{{ user.id }}"),
+        }
+      });
+    })
+
+    $.ajax({
+      dataType: 'json',
+      url: "{% url 'rewards:user-status-list' %}",
+      success: success4
+    });
+
+    function success4(data) {
+      var result = "";
+      $.each(data.results, function(index, value)
+      {
+        result += '<tr><td><div class="task-contain"><h6 class="bg-c-blue d-inline-block text-center">' + value.level_obj.name[0] + '</h6>';
+        result += '<p class="d-inline-block m-l-20">' + value.user_obj.name + '</p></div></td><td>'
+        result += '<p class="d-inline-block m-r-20">' + value.total_points
+        result += '</p><div class="progress d-inline-block"><div class="progress-bar bg-c-blue" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:80%"></div></div></td></tr>';
+      });
+      $('#leaders').html(result);
+    }
+
+  });
+</script>
+
+{% endblock %}

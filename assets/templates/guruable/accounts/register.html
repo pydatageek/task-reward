@@ -1,0 +1,77 @@
+{% extends 'guruable/accounts/base.html' %}
+{% load static i18n widget_tweaks %}
+
+{% block content %}
+<!-- Authentication card start -->
+<div class="signup-card card-block auth-body mr-auto ml-auto">
+  <form method="POST" class="md-float-material">
+    {% csrf_token %}
+    <div class="auth-box">
+      <div class="row m-b-20">
+        <div class="col-md-12">
+          <h3 class="text-center txt-primary">
+            {% trans 'Sign up. It is fast and easy.' %}</h3>
+
+            {% if form.errors %}
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                {% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+              {% endfor %}
+            {% endif %}
+            
+        </div>
+      </div>
+      <hr/>
+      <div class="input-group">
+        {% render_field form.username class+="form-control" placeholder=form.username.label %}
+        <span class="md-line"></span>
+      </div>
+      <div class="input-group">
+        {% render_field form.email class+="form-control" placeholder=form.email.label %}
+        <span class="md-line"></span>
+      </div>
+      <div class="input-group">
+        {% render_field form.email2 class+="form-control" placeholder=form.email2.label %}
+        <span class="md-line"></span>
+      </div>
+      <div class="input-group">
+        {% render_field form.password1 class+="form-control" placeholder=form.password1.label %}
+        <span class="md-line"></span>
+      </div>
+      <div class="input-group">
+        {% render_field form.password2 class+="form-control" placeholder=form.password2.label %}
+        <span class="md-line"></span>
+      </div>
+
+      <div class="row m-t-30">
+        <div class="col-md-12">
+          <button type="submit" 
+            class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">
+            {% trans 'Sign up now' %}</button>
+        </div>
+      </div>
+      <hr/>
+      <div class="row">
+        <div class="col-md-10">
+          <p class="text-inverse text-left m-b-0">
+            {% trans 'Thank you and enjoy our website.' %}</p>
+            <a href="{% url 'login' %}" class="text-inverse text-left">
+              {% trans 'I already have a membership' %}</a>
+        </div>
+        <div class="col-md-2">
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- end of form -->
+</div>
+<!-- Authentication card end -->
+{% endblock %}
